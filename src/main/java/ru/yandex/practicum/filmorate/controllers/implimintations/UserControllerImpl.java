@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.controllers.interfaces.UserController;
 import ru.yandex.practicum.filmorate.exeptions.UserAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
+import ru.yandex.practicum.filmorate.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.models.User;
 
 //Я по тихому начинаю ненавидеть ТЗ яндекса. Сначала напиши - а потом подгоняй под тесты постмана
+//Мы используем PUT но при это при отсутствии пользователя должны возвращать ошибку. Хотя есть PATCH
+//Это смешно даже уже.
 
 @RestController
 public class UserControllerImpl implements UserController {
@@ -32,7 +35,7 @@ public class UserControllerImpl implements UserController {
         try {
             log.debug("Получен запрос на добавления пользователя");
             userValidation(user);
-            if (user.getName().equals("")) {
+            if (user.getName() == null || user.getName().equals("")) {
                 log.info("Имя пользователя было пустым и заменено логином");
                 user.setName(user.getLogin());
             }
@@ -40,7 +43,8 @@ public class UserControllerImpl implements UserController {
                 user = new User(counter,user);
                 counter++;
                 log.debug("Пользователь успешно создан", user);
-                return users.put(user.getId(), user);
+                users.put(user.getId(), user);
+                return users.get(user.getId());
             } else {
                 log.error("Попытка создания существующего пользователя");
                 throw new UserAlreadyExistsException("Пользователь с таким id уже существует!");
@@ -58,13 +62,12 @@ public class UserControllerImpl implements UserController {
         try {
             userValidation(user);
             if (!users.containsKey(user.getId())) {
-                user = new User(counter,user);
-                counter++;
-                log.debug("Пользователь успешно создан", user);
+                throw new UserNotFoundException("Пользователь с таким id не найден");
             } else {
                 log.debug("Пользователь успешно обновлен", user);
             }
-            return users.put(user.getId(), user);
+            users.put(user.getId(), user);
+            return users.get(user.getId());
 
         } catch (ValidationException | CustomValidationException exception) {
             log.error("Не пройдена валидация для создангия пользователя", user);

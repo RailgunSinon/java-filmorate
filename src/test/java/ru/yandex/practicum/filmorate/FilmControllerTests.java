@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controllers.implimintations.FilmControllerImpl;
 import ru.yandex.practicum.filmorate.controllers.interfaces.FilmController;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
+import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 
 //Мне тут -наныли- сказали, что нижнее подчеркивание в имени метода лучше не использовать. Аля не
@@ -176,4 +177,22 @@ public class FilmControllerTests {
 
         Assertions.assertEquals("Дата релиза до 28.12.1985!", exception.getMessage());
     }
+
+    @Test
+    void updateFilmNotExistParametersShouldThrowFilmNotFoundException() {
+        filmController.addFilm(film);
+        film = new Film(5, "Тихоокеанский рубеж 2", "О роботах",
+            LocalDate.of(1900, 6, 11), 131);
+
+        final FilmNotFoundException exception =  Assertions.assertThrows(
+            FilmNotFoundException.class, new Executable() {
+                @Override
+                public void execute() {
+                    filmController.updateFilm(film);
+                }
+            });
+
+        Assertions.assertEquals("Пользователь с таким id не найден", exception.getMessage());
+    }
+
 }

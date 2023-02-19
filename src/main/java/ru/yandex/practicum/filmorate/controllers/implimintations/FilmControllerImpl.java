@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.controllers.interfaces.FilmController;
 import ru.yandex.practicum.filmorate.exeptions.FilmAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
+import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 
 //А если я хочу не бросить ошибку, а вернуть ее, как можно обыргать возврат? Хочется вместо 500
@@ -37,7 +38,8 @@ public class FilmControllerImpl implements FilmController {
                 film = new Film(counter,film);
                 counter++;
                 log.debug("Создан объект", film);
-                return films.put(film.getId(), film);
+                films.put(film.getId(), film);
+                return films.get(film.getId());
             } else {
                 log.error("Попытка создания существующего фильма");
                 throw new FilmAlreadyExistsException("Фильм с таким id уже существует!");
@@ -55,13 +57,12 @@ public class FilmControllerImpl implements FilmController {
         try {
             filmValidation(film);
             if (!films.containsKey(film.getId())) {
-                log.debug("Создан объект", film);
-                film = new Film(counter,film);
-                counter++;
+                throw new FilmNotFoundException("Пользователь с таким id не найден");
             } else {
                 log.debug("Обновлен объект", film);
             }
-            return films.put(film.getId(), film);
+            films.put(film.getId(), film);
+            return films.get(film.getId());
         } catch (ValidationException | CustomValidationException exception) {
             log.error("Не пройдена валидация для создангия фильма", film);
             throw new CustomValidationException(exception.getMessage());

@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controllers.implimintations.UserControllerImpl;
 import ru.yandex.practicum.filmorate.controllers.interfaces.UserController;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
+import ru.yandex.practicum.filmorate.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.models.User;
 
 @SpringBootTest
@@ -162,6 +163,23 @@ public class UserControllerTests {
             });
 
         Assertions.assertEquals("Логин содержит пробелы!", exception.getMessage());
+    }
+
+    @Test
+    void updateUserNotExistsShouldThrowUserNotFoundException() {
+        userController.addUser(user);
+        user = new User(5, "testTwo@yandex.ru", "Helloworld", "Elena",
+            LocalDate.of(1996, 11, 23));
+
+        final UserNotFoundException exception = Assertions.assertThrows(
+            UserNotFoundException.class, new Executable() {
+                @Override
+                public void execute() {
+                    userController.updateUser(user);
+                }
+            });
+
+        Assertions.assertEquals("Пользователь с таким id не найден", exception.getMessage());
     }
 
 }

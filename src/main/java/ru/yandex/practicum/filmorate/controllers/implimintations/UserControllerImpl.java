@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,23 +35,21 @@ public class UserControllerImpl implements UserController {
     public User addUser(@Valid @RequestBody User user) {
         try {
             log.debug("Получен запрос на добавления пользователя");
-            userValidation(user);
-            if (user.getName() == null || user.getName().equals("")) {
-                log.info("Имя пользователя было пустым и заменено логином");
-                user.setName(user.getLogin());
-            }
-            if (!users.containsKey(user.getId())) {
-                user = new User(counter,user);
-                counter++;
-                log.debug("Пользователь успешно создан", user);
-                users.put(user.getId(), user);
-                return users.get(user.getId());
-            } else {
+            if (users.containsKey(user.getId())) {
                 log.error("Попытка создания существующего пользователя");
                 throw new UserAlreadyExistsException("Пользователь с таким id уже существует!");
             }
+            userValidation(user);
+            if (!StringUtils.hasText(user.getName())) {
+                log.info("Имя пользователя было пустым и заменено логином");
+                user.setName(user.getLogin());
+            }
+            user = new User(counter++, user);
+            log.debug("Пользователь успешно создан", user);
+            users.put(user.getId(), user);
+            return users.get(user.getId());
         } catch (ValidationException | CustomValidationException exception) {
-            log.error("Не пройдена валидация для создангия пользователя", user);
+            log.error("Не пройдена валидация для создания пользователя", user);
             throw new CustomValidationException(exception.getMessage());
         }
     }
@@ -59,18 +58,16 @@ public class UserControllerImpl implements UserController {
     @PutMapping(value = "/users")
     public User updateUser(@Valid @RequestBody User user) {
         log.debug("Получен запрос на обновление пользователя");
+        if (!users.containsKey(user.getId())) {
+            throw new UserNotFoundException("Пользователь с таким id не найден");
+        }
         try {
             userValidation(user);
-            if (!users.containsKey(user.getId())) {
-                throw new UserNotFoundException("Пользователь с таким id не найден");
-            } else {
-                log.debug("Пользователь успешно обновлен", user);
-            }
+            log.debug("Пользователь успешно обновлен", user);
             users.put(user.getId(), user);
             return users.get(user.getId());
-
         } catch (ValidationException | CustomValidationException exception) {
-            log.error("Не пройдена валидация для создангия пользователя", user);
+            log.error("Не пройдена валидация для обновления пользователя", user);
             throw new CustomValidationException(exception.getMessage());
         }
     }
@@ -78,6 +75,8 @@ public class UserControllerImpl implements UserController {
     @Override
     @GetMapping("/users")
     public List<User> getAllUsers() {
+        log.debug("Запрос на получение всех фильмов");
+        log.info("Всего пользователей : " + users.size());
         return new ArrayList<User>(users.values());
     }
 

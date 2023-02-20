@@ -10,8 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-//Ну допустим у нас будет регистрация ребенка, который только родился =) (по ТЗ)
-//А можно почитать где-нибудь как создать кастомную аннотацию для валидации, скажем, логина?
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,7 +26,7 @@ public class User {
     @PastOrPresent
     private LocalDate birthday;
 
-    public User(int id,User user){
+    public User(int id, User user) {
         this.id = id;
         this.email = user.email;
         this.login = user.login;

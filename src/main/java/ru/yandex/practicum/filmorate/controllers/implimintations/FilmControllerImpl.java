@@ -32,20 +32,18 @@ public class FilmControllerImpl implements FilmController {
     @PostMapping(value = "/films")
     public Film addFilm(@Valid @RequestBody Film film) {
         log.debug("Получен запрос на добавления фильма");
+        if (films.containsKey(film.getId())) {
+            log.error("Попытка создания существующего фильма");
+            throw new FilmAlreadyExistsException("Фильм с таким id уже существует!");
+        }
         try {
             filmValidation(film);
-            if (!films.containsKey(film.getId())) {
-                film = new Film(counter,film);
-                counter++;
-                log.debug("Создан объект", film);
-                films.put(film.getId(), film);
-                return films.get(film.getId());
-            } else {
-                log.error("Попытка создания существующего фильма");
-                throw new FilmAlreadyExistsException("Фильм с таким id уже существует!");
-            }
+            film = new Film(counter++, film);
+            log.debug("Создан объект", film);
+            films.put(film.getId(), film);
+            return films.get(film.getId());
         } catch (ValidationException | CustomValidationException exception) {
-            log.error("Не пройдена валидация для создангия фильма", film);
+            log.error("Не пройдена валидация для создания фильма", film);
             throw new CustomValidationException(exception.getMessage());
         }
     }
@@ -54,17 +52,16 @@ public class FilmControllerImpl implements FilmController {
     @PutMapping(value = "/films")
     public Film updateFilm(@Valid @RequestBody Film film) {
         log.debug("Получен запрос на обновление фильма");
+        if (!films.containsKey(film.getId())) {
+            throw new FilmNotFoundException("Фильм с таким id не найден");
+        }
         try {
             filmValidation(film);
-            if (!films.containsKey(film.getId())) {
-                throw new FilmNotFoundException("Пользователь с таким id не найден");
-            } else {
-                log.debug("Обновлен объект", film);
-            }
+            log.debug("Обновлен объект", film);
             films.put(film.getId(), film);
             return films.get(film.getId());
         } catch (ValidationException | CustomValidationException exception) {
-            log.error("Не пройдена валидация для создангия фильма", film);
+            log.error("Не пройдена валидация для обновления фильма", film);
             throw new CustomValidationException(exception.getMessage());
         }
     }

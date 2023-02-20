@@ -20,9 +20,6 @@ import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
 import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 
-//Мне тут -наныли- сказали, что нижнее подчеркивание в имени метода лучше не использовать. Аля не
-// по феншую. Хотя по мне более читаемо. Насколько это критично именно в тестах. Ибо по идее тест
-//Это всё тот же метод, по нотации да - не стоит, но всё же.
 @SpringBootTest
 public class FilmControllerTests {
 
@@ -184,7 +181,7 @@ public class FilmControllerTests {
         film = new Film(5, "Тихоокеанский рубеж 2", "О роботах",
             LocalDate.of(1900, 6, 11), 131);
 
-        final FilmNotFoundException exception =  Assertions.assertThrows(
+        final FilmNotFoundException exception = Assertions.assertThrows(
             FilmNotFoundException.class, new Executable() {
                 @Override
                 public void execute() {
@@ -192,7 +189,7 @@ public class FilmControllerTests {
                 }
             });
 
-        Assertions.assertEquals("Пользователь с таким id не найден", exception.getMessage());
+        Assertions.assertEquals("Фильм с таким id не найден", exception.getMessage());
     }
 
 }

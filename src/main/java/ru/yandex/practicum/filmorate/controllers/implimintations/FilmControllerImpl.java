@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,10 +22,10 @@ import ru.yandex.practicum.filmorate.models.Film;
 
 
 @RestController
+@Slf4j
 public class FilmControllerImpl implements FilmController {
 
     private final HashMap<Integer, Film> films = new HashMap<>();
-    private static final Logger log = LoggerFactory.getLogger(FilmControllerImpl.class);
     private int counter = 1;
 
     @Override

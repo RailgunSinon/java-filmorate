@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -20,10 +21,10 @@ import ru.yandex.practicum.filmorate.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.models.User;
 
 @RestController
+@Slf4j
 public class UserControllerImpl implements UserController {
 
     private final HashMap<Integer, User> users = new HashMap<>();
-    private static final Logger log = LoggerFactory.getLogger(UserControllerImpl.class);
     private int counter = 1;
 
     @Override

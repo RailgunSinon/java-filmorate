@@ -19,8 +19,7 @@ import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
 import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 
-//А если я хочу не бросить ошибку, а вернуть ее, как можно обыргать возврат? Хочется вместо 500
-//получать что-то более осмысленное
+
 @RestController
 public class FilmControllerImpl implements FilmController {
 

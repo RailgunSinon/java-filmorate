@@ -19,10 +19,6 @@ import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
 import ru.yandex.practicum.filmorate.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.models.User;
 
-//Я по тихому начинаю ненавидеть ТЗ яндекса. Сначала напиши - а потом подгоняй под тесты постмана
-//Мы используем PUT но при это при отсутствии пользователя должны возвращать ошибку. Хотя есть PATCH
-//Это смешно даже уже.
-
 @RestController
 public class UserControllerImpl implements UserController {
 

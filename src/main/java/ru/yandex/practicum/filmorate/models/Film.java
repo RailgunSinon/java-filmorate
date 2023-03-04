@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-//Мне казалось дата содержит конструктор - все параметры. Ан нет =/
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

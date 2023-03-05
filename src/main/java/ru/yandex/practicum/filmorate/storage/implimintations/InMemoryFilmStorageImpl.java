@@ -1,11 +1,12 @@
-package ru.yandex.practicum.filmorate.controllers.storage.implimintations;
+package ru.yandex.practicum.filmorate.storage.implimintations;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.controllers.storage.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.models.Film;
 
 @Component
@@ -29,5 +30,18 @@ public class InMemoryFilmStorageImpl implements FilmStorage {
     @Override
     public List<Film> getAllFilms() {
         return new ArrayList<Film>(films.values());
+    }
+
+    @Override
+    public Film getFilmById(int id) {
+        if(!films.containsKey(id)){
+            throw new FilmNotFoundException("Фильм с таким id не найден");
+        }
+        return films.get(id);
+    }
+
+    @Override
+    public boolean isFilmExists(int id) {
+        return films.containsKey(id);
     }
 }

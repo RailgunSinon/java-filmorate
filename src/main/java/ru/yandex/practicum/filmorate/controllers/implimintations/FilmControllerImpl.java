@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.controllers.implimintations;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,7 @@ import ru.yandex.practicum.filmorate.service.interfaces.FilmService;
 @Slf4j
 public class FilmControllerImpl implements FilmController {
 
-    private static final int TOP_FILM_COUNTER = 10;
+    private static final int TOP_FILM_COUNT = 10;
     private final FilmService filmService;
 
     @Autowired
@@ -67,18 +66,18 @@ public class FilmControllerImpl implements FilmController {
     }
 
     @PutMapping("/films/{id}/like/{userId}")
-    public void addLikeToFilm(@PathVariable int id,@PathVariable int userId){
-        filmService.addLikeToFilm(id,userId);
+    public void addLikeToFilm(@PathVariable int id, @PathVariable int userId) {
+        filmService.addLikeToFilm(id, userId);
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
-    public void deleteLikeFromFilm(@PathVariable int id,@PathVariable int userId){
-        filmService.deleteLikeFromFilm(id,userId);
+    public void deleteLikeFromFilm(@PathVariable int id, @PathVariable int userId) {
+        filmService.deleteLikeFromFilm(id, userId);
     }
 
     @GetMapping("/films/popular")
-    public List<Film> getMostPopularFilm(@RequestParam(required = false) Integer count){
-        return filmService.getMostPopularFilms(count == null ? TOP_FILM_COUNTER : count);
+    public List<Film> getMostPopularFilm(@RequestParam(required = false) Integer count) {
+        return filmService.getMostPopularFilms(count == null ? TOP_FILM_COUNT : count);
     }
 
     @ExceptionHandler
@@ -99,7 +98,7 @@ public class FilmControllerImpl implements FilmController {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleFilmAlreadyExistsException(
-        final FilmAlreadyExistsException exception){
+        final FilmAlreadyExistsException exception) {
         log.error("Попытка создать существующий фильм");
         return Map.of("Фильм уже существует", exception.getMessage());
     }
@@ -120,7 +119,7 @@ public class FilmControllerImpl implements FilmController {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> handleRunTimeException(final RuntimeException exception){
+    public Map<String, String> handleRunTimeException(final RuntimeException exception) {
         log.error("Неизвестная ошибка");
         return Map.of("Что-то пошло не так", exception.getMessage());
     }

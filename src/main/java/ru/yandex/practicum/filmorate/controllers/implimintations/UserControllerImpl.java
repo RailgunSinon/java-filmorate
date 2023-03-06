@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.controllers.implimintations;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +23,6 @@ import ru.yandex.practicum.filmorate.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.service.interfaces.UserService;
 
-//Вот тут я не понял, почему при добавлении в друзья мы идём через @PathVariable, а не через
-//@RequestParam
 
 @RestController
 @Slf4j

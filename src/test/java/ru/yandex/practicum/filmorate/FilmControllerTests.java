@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -19,6 +20,8 @@ import ru.yandex.practicum.filmorate.controllers.interfaces.FilmController;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
 import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.service.implimintations.FilmServiceImpl;
+import ru.yandex.practicum.filmorate.storage.implimintations.InMemoryFilmStorageImpl;
 
 @SpringBootTest
 public class FilmControllerTests {
@@ -32,15 +35,15 @@ public class FilmControllerTests {
     public void setUp() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.usingContext().getValidator();
-        filmController = new FilmControllerImpl();
+        filmController = new FilmControllerImpl(new FilmServiceImpl(new InMemoryFilmStorageImpl()));
         film = new Film(1, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), 131);
+            LocalDate.of(2013, 6, 11), 131,new HashSet<>());
     }
 
     @Test
     void validateIdNegativeShouldFailValidation() {
         film = new Film(-1, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), 131);
+            LocalDate.of(2013, 6, 11), 131,new HashSet<>());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -50,7 +53,7 @@ public class FilmControllerTests {
     @Test
     void validateIdZeroShouldNotFailValidation() {
         film = new Film(0, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), 131);
+            LocalDate.of(2013, 6, 11), 131,new HashSet<>());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -60,7 +63,7 @@ public class FilmControllerTests {
     @Test
     void validateDurationNegativeShouldFailValidation() {
         film = new Film(1, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), -131);
+            LocalDate.of(2013, 6, 11), -131,new HashSet<>());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -70,7 +73,7 @@ public class FilmControllerTests {
     @Test
     void validateDurationZeroShouldFailValidation() {
         film = new Film(1, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), 0);
+            LocalDate.of(2013, 6, 11), 0,new HashSet<>());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -150,7 +153,7 @@ public class FilmControllerTests {
         Film gottenFilm;
         filmController.addFilm(film);
         film = new Film(1, "Тихоокеанский рубеж 2", "О роботах",
-            LocalDate.of(2013, 6, 11), 131);
+            LocalDate.of(2013, 6, 11), 131,new HashSet<>());
 
         filmController.updateFilm(film);
         gottenFilm = filmController.getAllFilms().get(0);
@@ -162,7 +165,7 @@ public class FilmControllerTests {
     void updateFilmWithBadParametersShouldThrowCustomValidationException() {
         filmController.addFilm(film);
         film = new Film(1, "Тихоокеанский рубеж 2", "О роботах",
-            LocalDate.of(1800, 6, 11), 131);
+            LocalDate.of(1800, 6, 11), 131,new HashSet<>());
 
         final CustomValidationException exception = Assertions.assertThrows(
             CustomValidationException.class, new Executable() {
@@ -179,7 +182,7 @@ public class FilmControllerTests {
     void updateFilmNotExistParametersShouldThrowFilmNotFoundException() {
         filmController.addFilm(film);
         film = new Film(5, "Тихоокеанский рубеж 2", "О роботах",
-            LocalDate.of(1900, 6, 11), 131);
+            LocalDate.of(1900, 6, 11), 131,new HashSet<>());
 
         final FilmNotFoundException exception = Assertions.assertThrows(
             FilmNotFoundException.class, new Executable() {

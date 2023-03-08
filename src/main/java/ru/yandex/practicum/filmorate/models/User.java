@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.models;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +25,7 @@ public class User {
     private String name;
     @PastOrPresent
     private LocalDate birthday;
+    private HashSet<Integer> friendsSet = new HashSet<>();
 
     public User(int id, User user) {
         this.id = id;
@@ -32,5 +33,6 @@ public class User {
         this.login = user.login;
         this.name = user.name;
         this.birthday = user.birthday;
+        this.friendsSet = new HashSet<>(user.getFriendsSet());
     }
 }

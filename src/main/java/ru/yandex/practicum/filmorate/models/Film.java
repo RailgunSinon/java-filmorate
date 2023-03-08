@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.models;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -8,11 +9,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-//Мне казалось дата содержит конструктор - все параметры. Ан нет =/
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Film {
+public class Film implements Comparable<Film> {
 
     @PositiveOrZero
     private int id;
@@ -23,6 +24,7 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private int duration;
+    private HashSet<Integer> likesSet = new HashSet<>();
 
 
     public Film(int id, Film film){
@@ -31,5 +33,18 @@ public class Film {
         this.description = film.description;
         this.releaseDate = film.releaseDate;
         this.duration = film.duration;
+        this.likesSet = new HashSet<>(film.getLikesSet());
+    }
+
+
+    @Override
+    public int compareTo(Film o) {
+        if(o.getLikesSet().size() == this.getLikesSet().size()){
+            return 0;
+        } else if(this.getLikesSet().size() > o.getLikesSet().size()){
+            return 1;
+        } else {
+            return -1;
+        }
     }
 }

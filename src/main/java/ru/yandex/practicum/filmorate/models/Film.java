@@ -8,6 +8,8 @@ import javax.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.yandex.practicum.filmorate.models.enums.FilmGenre;
+import ru.yandex.practicum.filmorate.models.enums.MPARating;
 
 
 @Data
@@ -24,6 +26,8 @@ public class Film implements Comparable<Film> {
     private LocalDate releaseDate;
     @Positive
     private int duration;
+    private FilmGenre filmGenre;
+    private MPARating rating;
     private HashSet<Integer> likesSet = new HashSet<>();
 
 

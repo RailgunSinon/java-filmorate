@@ -16,6 +16,10 @@ import ru.yandex.practicum.filmorate.models.Friendship;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
+//Там в ветке есть коммент к промежуточному заданию. Ветка add-friends-likes чел в коммит мне его
+// написал. Но могу просто отдельно попросить прислать, да и схему я с тех пор поменял на более
+//практичную в данном кейсе.
+
 @Component
 @Slf4j
 public class InDatabaseUserStorageImpl implements UserStorage {
@@ -98,19 +102,19 @@ public class InDatabaseUserStorageImpl implements UserStorage {
     @Override
     public User getDataById(int id) {
         String sqlQuery = "SELECT * FROM USERS WHERE id = ?";
-        try{
+        try {
             return jdbcTemplate.queryForObject(sqlQuery, this::makeUser, id);
-        } catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             throw new UserNotFoundException("Пользователь с таким id не найден");
         }
     }
 
     @Override
     public boolean isDataExists(int id) {
-        try{
+        try {
             getDataById(id);
             return true;
-        } catch (UserNotFoundException e){
+        } catch (UserNotFoundException e) {
             return false;
         }
     }

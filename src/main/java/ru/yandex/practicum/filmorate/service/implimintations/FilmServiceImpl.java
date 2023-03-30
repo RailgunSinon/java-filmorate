@@ -17,10 +17,7 @@ import ru.yandex.practicum.filmorate.models.FilmGenre;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.service.interfaces.FilmService;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
-//Я подумывал задачь через Primary или Qualifier конкретики, но по идее Autowired должен и сам
-//справиться при единичной импементации.
 @Service
 @Slf4j
 public class FilmServiceImpl implements FilmService {

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.implimintations;
 
+import com.sun.jdi.ObjectCollectedException;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,8 +10,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmGenre;
 import ru.yandex.practicum.filmorate.models.FilmRating;
@@ -98,43 +101,59 @@ public class InDatabaseFilmStorageImpl implements FilmStorage {
     @Override
     public Film getDataById(int id) {
         String sqlQuery = "SELECT * FROM FILMS WHERE id = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, id);
+        try {
+            return jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new FilmNotFoundException("Фильм с таким id не найден");
+        }
     }
 
     @Override
     public boolean isDataExists(int id) {
-        Optional<Film> film = Optional.of(getDataById(id));
-        return film.isEmpty() ? false : true;
+        try {
+            getDataById(id);
+            return true;
+        } catch (FilmNotFoundException e) {
+            return false;
+        }
     }
 
     @Override
     public List<FilmGenre> getAllGenres() {
-        String sqlQuery = "SELECT * FROM GENRES";
+        String sqlQuery = "SELECT * FROM GENRE";
         return jdbcTemplate.query(sqlQuery, this::makeFilmGenre);
     }
 
     @Override
     public FilmGenre getFilmGenreById(int id) {
-        String sqlQuery = "SELECT * FROM GENRES WHERE id = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, this::makeFilmGenre,id);
+        String sqlQuery = "SELECT * FROM GENRE WHERE id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sqlQuery, this::makeFilmGenre, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ObjectCollectedException("Жанр с таким id не найден");
+        }
     }
 
     @Override
     public List<FilmRating> getAllFilmRatings() {
         String sqlQuery = "SELECT * FROM RATING";
-        return jdbcTemplate.query(sqlQuery, this::makeFilmRating);
+        try {
+            return jdbcTemplate.query(sqlQuery, this::makeFilmRating);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ObjectCollectedException("Рейтинг с таким id не найден");
+        }
     }
 
     @Override
     public FilmRating getFilmRatingById(int id) {
         String sqlQuery = "SELECT * FROM RATING WHERE id = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, this::makeFilmRating,id);
+        return jdbcTemplate.queryForObject(sqlQuery, this::makeFilmRating, id);
     }
 
     private FilmRating makeFilmRating(ResultSet resultSet, int rowNum) throws SQLException {
         int id = resultSet.getInt("id");
         String name = resultSet.getString("name");
-        return new FilmRating(id,name);
+        return new FilmRating(id, name);
     }
 
     private FilmGenre makeFilmGenre(ResultSet resultSet, int rowNum) throws SQLException {
@@ -157,6 +176,7 @@ public class InDatabaseFilmStorageImpl implements FilmStorage {
             likesSet);
 
         return film;
+
     }
 
     private String getRating(int id) {
@@ -165,8 +185,8 @@ public class InDatabaseFilmStorageImpl implements FilmStorage {
     }
 
     private HashSet<String> getFilmGenres(int id) {
-        String sqlQuery = "SELECT name FROM Genre WHERE id IN (SELECT genreId FROM FilmGenres WHERE"
-            + "filmId = ?)";
+        String sqlQuery = "SELECT name FROM Genre WHERE id IN "
+            + "(SELECT genreId FROM FilmGenres WHERE filmId = ?)";
         return new HashSet<>(jdbcTemplate.query(sqlQuery,
             (rs, rowNum) -> rs.getString("name"), id));
     }

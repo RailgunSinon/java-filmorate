@@ -83,6 +83,7 @@ public class FilmControllerImpl implements FilmController {
         return filmService.getMostPopularFilms(count == null ? TOP_FILM_COUNT : count);
     }
 
+    @Override
     @GetMapping("/genres")
     public List<FilmGenre> getAllFilmGenres(){
         log.debug("Запрос на получение всех жанров фильмов");
@@ -95,6 +96,7 @@ public class FilmControllerImpl implements FilmController {
         return filmService.getFilmGenreById(id);
     }
 
+    @Override
     @GetMapping("/mpa")
     public List<FilmRating> getAllFilmRatings(){
         log.debug("Запрос на получение всех возрастных рейтингов фильмов");

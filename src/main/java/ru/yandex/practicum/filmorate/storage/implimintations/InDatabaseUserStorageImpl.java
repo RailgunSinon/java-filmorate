@@ -9,8 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.models.Friendship;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
@@ -37,8 +39,8 @@ public class InDatabaseUserStorageImpl implements UserStorage {
             stmt.setInt(1, user.getId());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getLogin());
-            stmt.setString(3, user.getName());
-            stmt.setDate(4, Date.valueOf(user.getBirthday()));
+            stmt.setString(4, user.getName());
+            stmt.setDate(5, Date.valueOf(user.getBirthday()));
             return stmt;
         });
 
@@ -97,13 +99,21 @@ public class InDatabaseUserStorageImpl implements UserStorage {
     @Override
     public User getDataById(int id) {
         String sqlQuery = "SELECT * FROM USERS WHERE id = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, this::makeUser, id);
+        try{
+            return jdbcTemplate.queryForObject(sqlQuery, this::makeUser, id);
+        } catch (EmptyResultDataAccessException e){
+            throw new UserNotFoundException("Пользователь с таким id не найден");
+        }
     }
 
     @Override
     public boolean isDataExists(int id) {
-        Optional<User> user = Optional.of(getDataById(id));
-        return user.isEmpty() ? false : true;
+        try{
+            getDataById(id);
+            return true;
+        } catch (UserNotFoundException e){
+            return false;
+        }
     }
 
     private User makeUser(ResultSet resultSet, int rowNum) throws SQLException {

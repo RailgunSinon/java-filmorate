@@ -25,7 +25,7 @@ public class User {
     private String name;
     @PastOrPresent
     private LocalDate birthday;
-    private HashSet<Integer> friendsSet = new HashSet<>();
+    private HashSet<Friendship> friendsSet = new HashSet<>();
 
     public User(int id, User user) {
         this.id = id;

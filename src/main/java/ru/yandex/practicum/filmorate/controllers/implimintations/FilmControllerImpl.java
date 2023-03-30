@@ -22,7 +22,10 @@ import ru.yandex.practicum.filmorate.exeptions.FilmAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
 import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exeptions.LikeNotFoundException;
+import ru.yandex.practicum.filmorate.exeptions.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.FilmGenre;
+import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.service.interfaces.FilmService;
 
 
@@ -80,6 +83,30 @@ public class FilmControllerImpl implements FilmController {
         return filmService.getMostPopularFilms(count == null ? TOP_FILM_COUNT : count);
     }
 
+    @GetMapping("/genres")
+    public List<FilmGenre> getAllFilmGenres(){
+        log.debug("Запрос на получение всех жанров фильмов");
+        return filmService.getAllFilmGenres();
+    }
+
+    @GetMapping("/genres/{id}")
+    public FilmGenre getFilmGenreById(@PathVariable int id){
+        log.debug("Запрос на получение жанра фильма по id");
+        return filmService.getFilmGenreById(id);
+    }
+
+    @GetMapping("/mpa")
+    public List<FilmRating> getAllFilmRatings(){
+        log.debug("Запрос на получение всех возрастных рейтингов фильмов");
+        return filmService.getAllFilmRatings();
+    }
+
+    @GetMapping("/mpa/{id}")
+    public FilmRating getFilmRatingById(@PathVariable int id){
+        log.debug("Запрос на получение возрастного рейтинга фильма по id");
+        return filmService.getFilmRatingById(id);
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationException(final ValidationException exception) {
@@ -108,6 +135,14 @@ public class FilmControllerImpl implements FilmController {
     public Map<String, String> handleFilmNotFoundException(final FilmNotFoundException exception) {
         log.error("Фильм с заданным id не был обнаружен");
         return Map.of("Не удалось найти указанный фильм", exception.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleObjectNotFoundException(
+        final ObjectNotFoundException exception) {
+        log.error("Объект с заданным id не был обнаружен");
+        return Map.of("Не удалось найти указанный объект", exception.getMessage());
     }
 
     @ExceptionHandler

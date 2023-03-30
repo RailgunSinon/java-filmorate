@@ -5,24 +5,26 @@ import java.util.HashSet;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
 import ru.yandex.practicum.filmorate.exeptions.UserAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exeptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.models.Friendship;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.service.interfaces.UserService;
-import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
+import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    private final Storage<User> userStorage;
+    private final UserStorage userStorage;
     private int counter = 1;
 
     @Autowired
-    public UserServiceImpl(Storage<User> userStorage) {
+    public UserServiceImpl(@Qualifier("inDatabaseUserStorageImpl") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -71,11 +73,8 @@ public class UserServiceImpl implements UserService {
     public void addFriend(int firstUserId, int secondUserId) {
         log.debug("Запрос на добавления в друзья");
         User firstUser = userStorage.getDataById(firstUserId);
-        User secondUser = userStorage.getDataById(secondUserId);
-        firstUser.getFriendsSet().add(secondUserId);
-        secondUser.getFriendsSet().add(firstUserId);
+        firstUser.getFriendsSet().add(new Friendship(secondUserId,false));
         updateUser(firstUser);
-        updateUser(secondUser);
     }
 
     @Override
@@ -96,18 +95,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getCommonFriends(int firstUserId, int secondUserId) {
         ArrayList<User> commonFriends = new ArrayList<>();
-        HashSet<Integer> firstUserSet = userStorage.getDataById(firstUserId).getFriendsSet();
-        HashSet<Integer> secondUserSet = userStorage.getDataById(secondUserId).getFriendsSet();
+        HashSet<Friendship> firstUserSet = userStorage.getDataById(firstUserId).getFriendsSet();
+        HashSet<Friendship> secondUserSet = userStorage.getDataById(secondUserId).getFriendsSet();
         if (firstUserSet.size() > secondUserSet.size()) {
-            for (Integer id : firstUserSet) {
-                if (secondUserSet.contains(id)) {
-                    commonFriends.add(userStorage.getDataById(id));
+            for (Friendship friend : firstUserSet) {
+                if (secondUserSet.contains(friend)) {
+                    commonFriends.add(userStorage.getDataById(friend.getFriendId()));
                 }
             }
         } else {
-            for (Integer id : secondUserSet) {
-                if (firstUserSet.contains(id)) {
-                    commonFriends.add(userStorage.getDataById(id));
+            for (Friendship friend : secondUserSet) {
+                if (firstUserSet.contains(friend)) {
+                    commonFriends.add(userStorage.getDataById(friend.getFriendId()));
                 }
             }
         }
@@ -120,8 +119,8 @@ public class UserServiceImpl implements UserService {
         ArrayList<User> friends = new ArrayList<>();
         User user = userStorage.getDataById(userId);
 
-        for (Integer id : user.getFriendsSet()) {
-            friends.add(userStorage.getDataById(id));
+        for (Friendship friend : user.getFriendsSet()) {
+            friends.add(userStorage.getDataById(friend.getFriendId()));
         }
 
         return friends;

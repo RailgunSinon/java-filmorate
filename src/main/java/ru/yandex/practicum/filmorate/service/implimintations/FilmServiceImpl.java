@@ -18,6 +18,7 @@ import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.service.interfaces.FilmService;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
+
 @Service
 @Slf4j
 public class FilmServiceImpl implements FilmService {
@@ -50,7 +51,7 @@ public class FilmServiceImpl implements FilmService {
             throw new FilmNotFoundException("Фильм с таким id не найден");
         }
         filmValidation(film);
-        filmStorage.addData(film);
+        filmStorage.updateData(film);
         return filmStorage.getDataById(film.getId());
     }
 

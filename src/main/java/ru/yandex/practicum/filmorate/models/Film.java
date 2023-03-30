@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.models;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//Я когда-нибудь перестану угадывать, какие сущности от нас хотят видеть по ТЗ, из тестов постмана =)
 
 @Data
 @AllArgsConstructor
@@ -24,28 +26,28 @@ public class Film implements Comparable<Film> {
     private LocalDate releaseDate;
     @Positive
     private int duration;
-    private HashSet<String> filmGenre;
-    private String rating;
+    private ArrayList<FilmGenre> genres = new ArrayList<>();
+    private FilmRating mpa;
     private HashSet<Integer> likesSet = new HashSet<>();
 
 
-    public Film(int id, Film film){
+    public Film(int id, Film film) {
         this.id = id;
         this.name = film.name;
         this.description = film.description;
         this.releaseDate = film.releaseDate;
         this.duration = film.duration;
-        this.rating = film.getRating();
-        this.filmGenre = new HashSet<>(film.getFilmGenre());
+        this.mpa = film.getMpa();
+        this.genres = new ArrayList<>(film.getGenres());
         this.likesSet = new HashSet<>(film.getLikesSet());
     }
 
 
     @Override
     public int compareTo(Film o) {
-        if(o.getLikesSet().size() == this.getLikesSet().size()){
+        if (o.getLikesSet().size() == this.getLikesSet().size()) {
             return 0;
-        } else if(this.getLikesSet().size() > o.getLikesSet().size()){
+        } else if (this.getLikesSet().size() > o.getLikesSet().size()) {
             return 1;
         } else {
             return -1;

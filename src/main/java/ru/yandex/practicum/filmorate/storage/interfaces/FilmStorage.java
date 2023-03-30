@@ -5,7 +5,7 @@ import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmGenre;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 
-//А тут снова пришлось разделить инерфейсы. Новый функционал распилил их
+//А тут снова пришлось разделить инерфейсы. Новый функционал распилил их пополам
 public interface FilmStorage {
     Film addData(Film t);
     Film updateData(Film t);

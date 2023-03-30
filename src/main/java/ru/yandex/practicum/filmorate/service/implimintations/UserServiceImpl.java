@@ -72,24 +72,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addFriend(int firstUserId, int secondUserId) {
         log.debug("Запрос на добавления в друзья");
+        if (!userStorage.isDataExists(firstUserId)) {
+            throw new UserNotFoundException("Пользователь с таким id не найден");
+        }
+        if (!userStorage.isDataExists(secondUserId)) {
+            throw new UserNotFoundException("Пользователь с таким id не найден");
+        }
         User firstUser = userStorage.getDataById(firstUserId);
-        firstUser.getFriendsSet().add(new Friendship(secondUserId,false));
+        firstUser.getFriendsSet().add(new Friendship(secondUserId, false));
         updateUser(firstUser);
     }
 
     @Override
     public void deleteFriend(int firstUserId, int secondUserId) {
         log.debug("Запрос на удаление друга");
-        User firstUser = userStorage.getDataById(firstUserId);
-        User secondUser = userStorage.getDataById(secondUserId);
-        if (firstUser.getFriendsSet().contains(secondUserId)) {
-            firstUser.getFriendsSet().remove(secondUserId);
+        if (!userStorage.isDataExists(firstUserId)) {
+            throw new UserNotFoundException("Пользователь с таким id не найден");
         }
-        if (secondUser.getFriendsSet().contains(firstUserId)) {
-            secondUser.getFriendsSet().remove(firstUserId);
+        if (!userStorage.isDataExists(secondUserId)) {
+            throw new UserNotFoundException("Пользователь с таким id не найден");
+        }
+        User firstUser = userStorage.getDataById(firstUserId);
+        if (firstUser.getFriendsSet().contains(new Friendship(secondUserId, false))) {
+            firstUser.getFriendsSet().remove(new Friendship(secondUserId, false));
         }
         updateUser(firstUser);
-        updateUser(secondUser);
     }
 
     @Override

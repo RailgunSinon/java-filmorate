@@ -23,6 +23,7 @@ import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserIntegrateDataBaseTests {
+
     private UserStorage userStorage;
     private EmbeddedDatabase database;
     private JdbcTemplate jdbcTemplate;
@@ -38,7 +39,7 @@ public class UserIntegrateDataBaseTests {
         jdbcTemplate = new JdbcTemplate(database);
         userStorage = new InDatabaseUserStorageImpl(jdbcTemplate);
         user = new User(1, "test@yandex.ru", "Kitty", "Elena",
-            LocalDate.of(1996, 11, 23),new HashSet<>());
+            LocalDate.of(1996, 11, 23), new HashSet<>());
     }
 
     @AfterEach
@@ -47,7 +48,7 @@ public class UserIntegrateDataBaseTests {
     }
 
     @Test
-    void isDataExistsNoFilmTestsShouldReturnFalse(){
+    void isDataExistsNoFilmTestsShouldReturnFalse() {
         boolean flag = userStorage.isDataExists(1);
         Assertions.assertFalse(flag);
     }
@@ -58,12 +59,12 @@ public class UserIntegrateDataBaseTests {
 
         User gottenUser = userStorage.getDataById(user.getId());
 
-        Assertions.assertEquals(user.getId(),gottenUser.getId());
-        Assertions.assertEquals(user.getLogin(),gottenUser.getLogin());
-        Assertions.assertEquals(user.getEmail(),gottenUser.getEmail());
-        Assertions.assertEquals(user.getFriendsSet().size(),gottenUser.getFriendsSet().size());
-        Assertions.assertEquals(user.getName(),gottenUser.getName());
-        Assertions.assertEquals(user.getBirthday(),gottenUser.getBirthday());
+        Assertions.assertEquals(user.getId(), gottenUser.getId());
+        Assertions.assertEquals(user.getLogin(), gottenUser.getLogin());
+        Assertions.assertEquals(user.getEmail(), gottenUser.getEmail());
+        Assertions.assertEquals(user.getFriendsSet().size(), gottenUser.getFriendsSet().size());
+        Assertions.assertEquals(user.getName(), gottenUser.getName());
+        Assertions.assertEquals(user.getBirthday(), gottenUser.getBirthday());
     }
 
     @Test
@@ -72,7 +73,7 @@ public class UserIntegrateDataBaseTests {
 
         List<User> users = userStorage.getAllData();
 
-        Assertions.assertEquals(1,users.size());
+        Assertions.assertEquals(1, users.size());
     }
 
     @Test
@@ -80,12 +81,12 @@ public class UserIntegrateDataBaseTests {
         userStorage.addData(user);
 
         user = new User(1, "testTwo@yandex.ru", "Kitty", "Elena",
-            LocalDate.of(1996, 11, 23),new HashSet<>());
+            LocalDate.of(1996, 11, 23), new HashSet<>());
 
         userStorage.updateData(user);
         User gottenUser = userStorage.getDataById(user.getId());
 
-        Assertions.assertEquals("testTwo@yandex.ru",gottenUser.getEmail());
+        Assertions.assertEquals("testTwo@yandex.ru", gottenUser.getEmail());
     }
 
 }

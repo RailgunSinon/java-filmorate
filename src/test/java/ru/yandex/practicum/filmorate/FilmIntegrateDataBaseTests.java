@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -40,13 +41,13 @@ public class FilmIntegrateDataBaseTests {
             .build();
         jdbcTemplate = new JdbcTemplate(database);
         filmStorage = new InDatabaseFilmStorageImpl(jdbcTemplate);
-        HashSet<String> genre = new HashSet<>();
-        genre.add("Комедия");
-        genre.add("Боевик");
+        ArrayList<FilmGenre> genre = new ArrayList<>();
+        genre.add(new FilmGenre(1, "Комедия"));
+        genre.add(new FilmGenre(2, "Драма"));
         film = new Film(1, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), 131, new HashSet<>(),
-            "G", new HashSet<>());
-        film.setFilmGenre(genre);
+            LocalDate.of(2013, 6, 11), 131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
+        film.setGenres(genre);
     }
 
     @AfterEach
@@ -63,23 +64,23 @@ public class FilmIntegrateDataBaseTests {
         Assertions.assertEquals(film.getId(), gottenFilm.getId());
         Assertions.assertEquals(film.getName(), gottenFilm.getName());
         Assertions.assertEquals(film.getDescription(), gottenFilm.getDescription());
-        Assertions.assertEquals(film.getRating(), gottenFilm.getRating());
+        Assertions.assertEquals(film.getMpa(), gottenFilm.getMpa());
         Assertions.assertEquals(film.getReleaseDate(), gottenFilm.getReleaseDate());
-        Assertions.assertEquals(film.getFilmGenre().size(), gottenFilm.getFilmGenre().size());
+        Assertions.assertEquals(film.getGenres().size(), gottenFilm.getGenres().size());
         Assertions.assertEquals(film.getDuration(), gottenFilm.getDuration());
         Assertions.assertEquals(film.getLikesSet().size(), gottenFilm.getLikesSet().size());
     }
 
     @Test
     void updateFilmTestShouldAddFilmAndReturnUpdatedFilm() {
-        HashSet<String> genre = new HashSet<>();
-        genre.add("Комедия");
-        genre.add("Боевик");
+        ArrayList<FilmGenre> genre = new ArrayList<>();
+        genre.add(new FilmGenre(1, "Комедия"));
+        genre.add(new FilmGenre(2, "Драма"));
         filmStorage.addData(film);
         film = new Film(1, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), 180, new HashSet<>(),
-            "G", new HashSet<>());
-        film.setFilmGenre(genre);
+            LocalDate.of(2013, 6, 11), 180, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
+        film.setGenres(genre);
 
         filmStorage.updateData(film);
         Film gottenFilm = filmStorage.getDataById(film.getId());
@@ -97,31 +98,31 @@ public class FilmIntegrateDataBaseTests {
     }
 
     @Test
-    void isDataExistsNoFilmTestsShouldReturnFalse(){
+    void isDataExistsNoFilmTestsShouldReturnFalse() {
         boolean flag = filmStorage.isDataExists(film.getId());
         Assertions.assertFalse(flag);
     }
 
     @Test
-    void getAllGenresShouldReturnAllGenresList(){
+    void getAllGenresShouldReturnAllGenresList() {
         List<FilmGenre> filmGenres = filmStorage.getAllGenres();
         Assertions.assertEquals(6, filmGenres.size());
     }
 
     @Test
-    void getAllRatingsShouldReturnAllGenresList(){
+    void getAllRatingsShouldReturnAllGenresList() {
         List<FilmRating> ratings = filmStorage.getAllFilmRatings();
         Assertions.assertEquals(5, ratings.size());
     }
 
     @Test
-    void getGenrebyIdShouldReturnGenre(){
+    void getGenrebyIdShouldReturnGenre() {
         FilmGenre genre = filmStorage.getFilmGenreById(1);
         Assertions.assertEquals("Комедия", genre.getName());
     }
 
     @Test
-    void getRatingbyIdShouldReturnRating(){
+    void getRatingbyIdShouldReturnRating() {
         FilmRating rating = filmStorage.getFilmRatingById(1);
         Assertions.assertEquals("G", rating.getName());
     }

@@ -9,9 +9,9 @@ MERGE INTO Genre KEY (id)
 MERGE INTO Rating KEY (id)
     VALUES (1, 'G'),
            (2, 'PG'),
-           (3, 'PG13'),
+           (3, 'PG-13'),
            (4, 'R'),
-           (5, 'NC17');
+           (5, 'NC-17');
 
 MERGE INTO FriendshipStatus KEY (id)
     VALUES (0, 'Запрошено'),

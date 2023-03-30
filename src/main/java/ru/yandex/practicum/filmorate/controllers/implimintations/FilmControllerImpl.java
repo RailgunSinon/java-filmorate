@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.controllers.interfaces.FilmController;
-import ru.yandex.practicum.filmorate.exeptions.FilmAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
+import ru.yandex.practicum.filmorate.exeptions.FilmAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exeptions.LikeNotFoundException;
 import ru.yandex.practicum.filmorate.exeptions.ObjectNotFoundException;
@@ -85,26 +85,26 @@ public class FilmControllerImpl implements FilmController {
 
     @Override
     @GetMapping("/genres")
-    public List<FilmGenre> getAllFilmGenres(){
+    public List<FilmGenre> getAllFilmGenres() {
         log.debug("Запрос на получение всех жанров фильмов");
         return filmService.getAllFilmGenres();
     }
 
     @GetMapping("/genres/{id}")
-    public FilmGenre getFilmGenreById(@PathVariable int id){
+    public FilmGenre getFilmGenreById(@PathVariable int id) {
         log.debug("Запрос на получение жанра фильма по id");
         return filmService.getFilmGenreById(id);
     }
 
     @Override
     @GetMapping("/mpa")
-    public List<FilmRating> getAllFilmRatings(){
+    public List<FilmRating> getAllFilmRatings() {
         log.debug("Запрос на получение всех возрастных рейтингов фильмов");
         return filmService.getAllFilmRatings();
     }
 
     @GetMapping("/mpa/{id}")
-    public FilmRating getFilmRatingById(@PathVariable int id){
+    public FilmRating getFilmRatingById(@PathVariable int id) {
         log.debug("Запрос на получение возрастного рейтинга фильма по id");
         return filmService.getFilmRatingById(id);
     }

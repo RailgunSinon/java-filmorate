@@ -39,20 +39,20 @@ public class FilmControllerTests {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.usingContext().getValidator();
         filmController = new FilmControllerImpl(new FilmServiceImpl(new InMemoryFilmStorageImpl()));
-        HashSet<String> genre = new HashSet<>();
-        genre.add("Комедия");
-        genre.add("Боевик");
+        ArrayList<FilmGenre> genre = new ArrayList<>();
+        genre.add(new FilmGenre(1, "Комедия"));
+        genre.add(new FilmGenre(2, "Драма"));
         film = new Film(1, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), 131, new HashSet<>(),
-            "G", new HashSet<>());
-        film.setFilmGenre(genre);
+            LocalDate.of(2013, 6, 11), 131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
+        film.setGenres(genre);
     }
 
     @Test
     void validateIdNegativeShouldFailValidation() {
         film = new Film(-1, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), 131, new HashSet<>(),
-            "G", new HashSet<>());
+            LocalDate.of(2013, 6, 11), 131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -62,8 +62,8 @@ public class FilmControllerTests {
     @Test
     void validateIdZeroShouldNotFailValidation() {
         film = new Film(0, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), 131, new HashSet<>(),
-            "G", new HashSet<>());
+            LocalDate.of(2013, 6, 11), 131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -73,8 +73,8 @@ public class FilmControllerTests {
     @Test
     void validateDurationNegativeShouldFailValidation() {
         film = new Film(1, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), -131, new HashSet<>(),
-            "G", new HashSet<>());
+            LocalDate.of(2013, 6, 11), -131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -84,8 +84,8 @@ public class FilmControllerTests {
     @Test
     void validateDurationZeroShouldFailValidation() {
         film = new Film(1, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), 0, new HashSet<>(),
-            "G", new HashSet<>());
+            LocalDate.of(2013, 6, 11), 0, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -165,8 +165,8 @@ public class FilmControllerTests {
         Film gottenFilm;
         filmController.addFilm(film);
         film = new Film(1, "Тихоокеанский рубеж 2", "О роботах",
-            LocalDate.of(2013, 6, 11), 131, new HashSet<>(),
-            "G", new HashSet<>());
+            LocalDate.of(2013, 6, 11), 131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
 
         filmController.updateFilm(film);
         gottenFilm = filmController.getAllFilms().get(0);
@@ -178,8 +178,8 @@ public class FilmControllerTests {
     void updateFilmWithBadParametersShouldThrowCustomValidationException() {
         filmController.addFilm(film);
         film = new Film(1, "Тихоокеанский рубеж 2", "О роботах",
-            LocalDate.of(1800, 6, 11), 131, new HashSet<>(),
-            "G", new HashSet<>());
+            LocalDate.of(1800, 6, 11), 131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
 
         final CustomValidationException exception = Assertions.assertThrows(
             CustomValidationException.class, new Executable() {
@@ -196,8 +196,8 @@ public class FilmControllerTests {
     void updateFilmNotExistParametersShouldThrowFilmNotFoundException() {
         filmController.addFilm(film);
         film = new Film(5, "Тихоокеанский рубеж 2", "О роботах",
-            LocalDate.of(1900, 6, 11), 131, new HashSet<>(),
-            "G", new HashSet<>());
+            LocalDate.of(1900, 6, 11), 131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
 
         final FilmNotFoundException exception = Assertions.assertThrows(
             FilmNotFoundException.class, new Executable() {

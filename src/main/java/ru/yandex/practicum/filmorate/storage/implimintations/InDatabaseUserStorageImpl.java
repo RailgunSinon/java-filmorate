@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,7 +30,7 @@ public class InDatabaseUserStorageImpl implements UserStorage {
     public User addData(User user) {
         String sqlQueryToUSers = "INSERT INTO USERS (id,email,login,name,birthday) "
             + "VALUES (?,?,?,?,?)";
-        String sqlQueryToFriends = "INSERT INTO Friends (userId,friendId,friendshipStatus) "
+        String sqlQueryToFriends = "INSERT INTO FRIENDS (userId,friendId,friendshipStatus) "
             + "VALUES (?,?,?)";
 
         jdbcTemplate.update(connection -> {
@@ -48,8 +47,8 @@ public class InDatabaseUserStorageImpl implements UserStorage {
             jdbcTemplate.update(connection -> {
                 PreparedStatement stmt = connection.prepareStatement(sqlQueryToFriends);
                 stmt.setInt(1, user.getId());
-                stmt.setInt(1, friend.getFriendId());
-                stmt.setInt(1, friend.isStatus() ? 1 : 0);
+                stmt.setInt(2, friend.getFriendId());
+                stmt.setInt(3, friend.isStatus() ? 1 : 0);
                 return stmt;
             });
         }
@@ -61,9 +60,9 @@ public class InDatabaseUserStorageImpl implements UserStorage {
     public User updateData(User user) {
         String sqlQueryToUsers = "UPDATE USERS SET email = ?,login = ?,name = ?, birthday = ?"
             + "WHERE id = ?";
-        String sqlQueryToFriends = "INSERT INTO Friends (userId,friendId,friendshipStatus) "
+        String sqlQueryToFriends = "INSERT INTO FRIENDS (userId,friendId,friendshipStatus) "
             + "VALUES (?,?,?)";
-        String sqlQueryToFriendsDelete = "DELETE FROM Friends WHERE userId = ?";
+        String sqlQueryToFriendsDelete = "DELETE FROM FRIENDS WHERE userId = ?";
 
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sqlQueryToUsers);
@@ -81,8 +80,8 @@ public class InDatabaseUserStorageImpl implements UserStorage {
             jdbcTemplate.update(connection -> {
                 PreparedStatement stmt = connection.prepareStatement(sqlQueryToFriends);
                 stmt.setInt(1, user.getId());
-                stmt.setInt(1, friend.getFriendId());
-                stmt.setInt(1, friend.isStatus() ? 1 : 0);
+                stmt.setInt(2, friend.getFriendId());
+                stmt.setInt(3, friend.isStatus() ? 1 : 0);
                 return stmt;
             });
         }

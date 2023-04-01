@@ -14,15 +14,12 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.models.Friendship;
 import ru.yandex.practicum.filmorate.models.User;
-import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
 
-//Там в ветке есть коммент к промежуточному заданию. Ветка add-friends-likes чел в коммит мне его
-// написал. Но могу просто отдельно попросить прислать, да и схему я с тех пор поменял на более
-//практичную в данном кейсе.
 
 @Component
 @Slf4j
-public class InDatabaseUserStorageImpl implements UserStorage {
+public class InDatabaseUserStorageImpl implements Storage<User> {
 
     private final JdbcTemplate jdbcTemplate;
 

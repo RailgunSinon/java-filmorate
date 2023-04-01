@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.controllers.implimintations;
+package ru.yandex.practicum.filmorate.controllers;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.controllers.interfaces.UserController;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
 import ru.yandex.practicum.filmorate.exeptions.UserAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exeptions.UserNotFoundException;
@@ -26,30 +25,27 @@ import ru.yandex.practicum.filmorate.service.interfaces.UserService;
 
 @RestController
 @Slf4j
-public class UserControllerImpl implements UserController {
+public class UserController {
 
     private final UserService userService;
 
     @Autowired
-    public UserControllerImpl(UserService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @Override
     @PostMapping(value = "/users")
     public User addUser(@Valid @RequestBody User user) {
         log.debug("Получен запрос на добавление пользователя");
         return userService.addUser(user);
     }
 
-    @Override
     @PutMapping(value = "/users")
     public User updateUser(@Valid @RequestBody User user) {
         log.debug("Получен запрос на обновление пользователя");
         return userService.updateUser(user);
     }
 
-    @Override
     @GetMapping("/users")
     public List<User> getAllUsers() {
         log.debug("Запрос на получение всех пользователей");

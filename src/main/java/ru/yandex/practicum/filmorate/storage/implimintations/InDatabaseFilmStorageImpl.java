@@ -9,28 +9,32 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exeptions.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmGenre;
 import ru.yandex.practicum.filmorate.models.FilmRating;
-import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
-
-//Я долго думал оставить тут функционал жанров и рейтингов, или унести отдельно. Так, как и лайки
-// уже живут тут нет смысла размазывать функционал, они все оносятся только к объекту фильмов и
-//нигде больше не требуются.
+import ru.yandex.practicum.filmorate.storage.interfaces.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.RatingStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
 
 @Component
 @Slf4j
-public class InDatabaseFilmStorageImpl implements FilmStorage {
+public class InDatabaseFilmStorageImpl implements Storage<Film> {
 
     private final JdbcTemplate jdbcTemplate;
+    private final GenreStorage genreStorage;
+    private final RatingStorage ratingStorage;
 
-    public InDatabaseFilmStorageImpl(JdbcTemplate jdbcTemplate) {
+    public InDatabaseFilmStorageImpl(JdbcTemplate jdbcTemplate,
+        @Qualifier("inDatabaseGenreStorageImpl") GenreStorage genreStorage,
+        @Qualifier("inDatabaseRatingStorageImpl") RatingStorage ratingStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.genreStorage = genreStorage;
+        this.ratingStorage = ratingStorage;
     }
 
     @Override
@@ -122,67 +126,14 @@ public class InDatabaseFilmStorageImpl implements FilmStorage {
         }
     }
 
-    @Override
-    public List<FilmGenre> getAllGenres() {
-        String sqlQuery = "SELECT * FROM GENRE";
-        try {
-            return jdbcTemplate.query(sqlQuery, this::makeFilmGenre);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ObjectNotFoundException("Жанр с таким id не найден");
-        }
-    }
-
-    @Override
-    public FilmGenre getFilmGenreById(int id) {
-        String sqlQuery = "SELECT * FROM GENRE WHERE id = ?";
-        try {
-            return jdbcTemplate.queryForObject(sqlQuery, this::makeFilmGenre, id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ObjectNotFoundException("Жанр с таким id не найден");
-        }
-    }
-
-    @Override
-    public List<FilmRating> getAllFilmRatings() {
-        String sqlQuery = "SELECT * FROM RATING";
-        try {
-            return jdbcTemplate.query(sqlQuery, this::makeFilmRating);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ObjectNotFoundException("Рейтинг с таким id не найден");
-        }
-    }
-
-    @Override
-    public FilmRating getFilmRatingById(int id) {
-        String sqlQuery = "SELECT * FROM RATING WHERE id = ?";
-        try {
-            return jdbcTemplate.queryForObject(sqlQuery, this::makeFilmRating, id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ObjectNotFoundException("Рейтинг с таким id не найден");
-        }
-    }
-
-    private FilmRating makeFilmRating(ResultSet resultSet, int rowNum) throws SQLException {
-        int id = resultSet.getInt("id");
-        String name = resultSet.getString("name");
-        return new FilmRating(id, name);
-    }
-
-    private FilmGenre makeFilmGenre(ResultSet resultSet, int rowNum) throws SQLException {
-        int id = resultSet.getInt("id");
-        String name = resultSet.getString("name");
-        return new FilmGenre(id, name);
-    }
-
     private Film makeFilm(ResultSet resultSet, int rowNum) throws SQLException {
         int id = resultSet.getInt("id");
         String name = resultSet.getString("name");
         String description = resultSet.getString("description");
         LocalDate releaseDate = resultSet.getDate("releaseDate").toLocalDate();
         int duration = resultSet.getInt("duration");
-        FilmRating rating = new FilmRating(resultSet.getInt("rating"),
-            getRating(resultSet.getInt("rating")));
-        ArrayList<FilmGenre> filmGenre = getFilmGenres(id);
+        FilmRating rating = ratingStorage.getRatingById(resultSet.getInt("rating"));
+        ArrayList<FilmGenre> filmGenre = getAllFilmGenres(id);
         HashSet<Integer> likesSet = getFilmLikes(id);
 
         Film film = new Film(id, name, description, releaseDate, duration, filmGenre, rating,
@@ -192,17 +143,11 @@ public class InDatabaseFilmStorageImpl implements FilmStorage {
 
     }
 
-    private String getRating(int id) {
-        String sqlQuery = "SELECT name FROM Rating WHERE id = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, String.class, id);
-    }
-
-    private ArrayList<FilmGenre> getFilmGenres(int id) {
-        String sqlQuery = "SELECT * FROM Genre WHERE id IN "
-            + "(SELECT genreId FROM FilmGenres WHERE filmId = ?)";
-        return new ArrayList<>(jdbcTemplate.query(sqlQuery,
-            (rs, rowNum) -> new FilmGenre(rs.getInt("id"),
-                rs.getString("name")), id));
+    private ArrayList<FilmGenre> getAllFilmGenres(int id) {
+        String sqlQuery = "SELECT genreId FROM FilmGenres WHERE filmId = ?";
+        return new ArrayList<>(genreStorage.getAllGenresForFilm(
+            new ArrayList<>(jdbcTemplate.query(sqlQuery,
+                (rs, rowNum) -> rs.getInt("genreId"), id))));
     }
 
     private HashSet<Integer> getFilmLikes(int id) {

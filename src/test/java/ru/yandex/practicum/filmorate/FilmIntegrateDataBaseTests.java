@@ -20,14 +20,16 @@ import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmGenre;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.storage.implimintations.InDatabaseFilmStorageImpl;
-import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.implimintations.InMemoryGenreStorageImpl;
+import ru.yandex.practicum.filmorate.storage.implimintations.InMemoryRatingStorageImpl;
+import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
 
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @AutoConfigureTestDatabase
 public class FilmIntegrateDataBaseTests {
 
-    private FilmStorage filmStorage;
+    private Storage<Film> filmStorage;
     private EmbeddedDatabase database;
     private JdbcTemplate jdbcTemplate;
     private Film film;
@@ -40,7 +42,8 @@ public class FilmIntegrateDataBaseTests {
             .setType(EmbeddedDatabaseType.H2)
             .build();
         jdbcTemplate = new JdbcTemplate(database);
-        filmStorage = new InDatabaseFilmStorageImpl(jdbcTemplate);
+        filmStorage = new InDatabaseFilmStorageImpl(jdbcTemplate, new InMemoryGenreStorageImpl(),
+            new InMemoryRatingStorageImpl());
         ArrayList<FilmGenre> genre = new ArrayList<>();
         genre.add(new FilmGenre(1, "Комедия"));
         genre.add(new FilmGenre(2, "Драма"));
@@ -103,27 +106,4 @@ public class FilmIntegrateDataBaseTests {
         Assertions.assertFalse(flag);
     }
 
-    @Test
-    void getAllGenresShouldReturnAllGenresList() {
-        List<FilmGenre> filmGenres = filmStorage.getAllGenres();
-        Assertions.assertEquals(6, filmGenres.size());
-    }
-
-    @Test
-    void getAllRatingsShouldReturnAllGenresList() {
-        List<FilmRating> ratings = filmStorage.getAllFilmRatings();
-        Assertions.assertEquals(5, ratings.size());
-    }
-
-    @Test
-    void getGenrebyIdShouldReturnGenre() {
-        FilmGenre genre = filmStorage.getFilmGenreById(1);
-        Assertions.assertEquals("Комедия", genre.getName());
-    }
-
-    @Test
-    void getRatingbyIdShouldReturnRating() {
-        FilmRating rating = filmStorage.getFilmRatingById(1);
-        Assertions.assertEquals("G", rating.getName());
-    }
 }

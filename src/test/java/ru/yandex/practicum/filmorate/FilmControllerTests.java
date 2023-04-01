@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -16,8 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.controllers.implimintations.FilmControllerImpl;
-import ru.yandex.practicum.filmorate.controllers.interfaces.FilmController;
+import ru.yandex.practicum.filmorate.controllers.FilmController;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
 import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
@@ -38,7 +36,7 @@ public class FilmControllerTests {
     public void setUp() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.usingContext().getValidator();
-        filmController = new FilmControllerImpl(new FilmServiceImpl(new InMemoryFilmStorageImpl()));
+        filmController = new FilmController(new FilmServiceImpl(new InMemoryFilmStorageImpl()));
         ArrayList<FilmGenre> genre = new ArrayList<>();
         genre.add(new FilmGenre(1, "Комедия"));
         genre.add(new FilmGenre(2, "Драма"));
@@ -208,18 +206,6 @@ public class FilmControllerTests {
             });
 
         Assertions.assertEquals("Фильм с таким id не найден", exception.getMessage());
-    }
-
-    @Test
-    void getAllGenresShouldReturnListOfGenres() {
-        List<FilmGenre> genres = filmController.getAllFilmGenres();
-        Assertions.assertEquals(6, genres.size());
-    }
-
-    @Test
-    void getAllRaringShouldReturnListOfGenres() {
-        List<FilmRating> ratings = filmController.getAllFilmRatings();
-        Assertions.assertEquals(5, ratings.size());
     }
 
 }

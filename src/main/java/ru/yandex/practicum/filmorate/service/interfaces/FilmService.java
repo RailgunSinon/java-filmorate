@@ -2,8 +2,6 @@ package ru.yandex.practicum.filmorate.service.interfaces;
 
 import java.util.List;
 import ru.yandex.practicum.filmorate.models.Film;
-import ru.yandex.practicum.filmorate.models.FilmGenre;
-import ru.yandex.practicum.filmorate.models.FilmRating;
 
 public interface FilmService {
 
@@ -21,11 +19,4 @@ public interface FilmService {
 
     List<Film> getMostPopularFilms(int counter);
 
-    List<FilmGenre> getAllFilmGenres();
-
-    FilmGenre getFilmGenreById(int id);
-
-    List<FilmRating> getAllFilmRatings();
-
-    FilmRating getFilmRatingById(int id);
 }

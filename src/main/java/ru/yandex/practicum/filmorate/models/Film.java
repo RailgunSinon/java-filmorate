@@ -10,8 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-//Я когда-нибудь перестану угадывать, какие сущности от нас хотят видеть по ТЗ, из тестов постмана =)
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

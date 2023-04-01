@@ -15,8 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.controllers.implimintations.UserControllerImpl;
-import ru.yandex.practicum.filmorate.controllers.interfaces.UserController;
+import ru.yandex.practicum.filmorate.controllers.UserController;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
 import ru.yandex.practicum.filmorate.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.models.User;
@@ -36,7 +35,7 @@ public class UserControllerTests {
     public void setUp() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.usingContext().getValidator();
-        userController = new UserControllerImpl(new UserServiceImpl(new InMemoryUserStorageImpl()));
+        userController = new UserController(new UserServiceImpl(new InMemoryUserStorageImpl()));
         user = new User(1, "test@yandex.ru", "Kitty", "Elena",
             LocalDate.of(1996, 11, 23), new HashSet<>());
     }

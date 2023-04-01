@@ -14,17 +14,17 @@ import ru.yandex.practicum.filmorate.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.models.Friendship;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.service.interfaces.UserService;
-import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    private final UserStorage userStorage;
+    private final Storage<User> userStorage;
     private int counter = 1;
 
     @Autowired
-    public UserServiceImpl(@Qualifier("inDatabaseUserStorageImpl") UserStorage userStorage) {
+    public UserServiceImpl(@Qualifier("inDatabaseUserStorageImpl") Storage<User> userStorage) {
         this.userStorage = userStorage;
     }
 

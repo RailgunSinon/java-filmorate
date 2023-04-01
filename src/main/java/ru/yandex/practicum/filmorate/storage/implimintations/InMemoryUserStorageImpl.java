@@ -6,10 +6,10 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.models.User;
-import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
 
 @Component
-public class InMemoryUserStorageImpl implements UserStorage {
+public class InMemoryUserStorageImpl implements Storage<User> {
 
     private final HashMap<Integer, User> users = new HashMap<>();
 
@@ -27,7 +27,7 @@ public class InMemoryUserStorageImpl implements UserStorage {
 
     @Override
     public List<User> getAllData() {
-        return new ArrayList<User>(users.values());
+        return new ArrayList<>(users.values());
     }
 
     @Override

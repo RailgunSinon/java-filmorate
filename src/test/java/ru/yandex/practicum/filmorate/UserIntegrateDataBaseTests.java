@@ -17,14 +17,14 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.implimintations.InDatabaseUserStorageImpl;
-import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserIntegrateDataBaseTests {
 
-    private UserStorage userStorage;
+    private Storage<User> userStorage;
     private EmbeddedDatabase database;
     private JdbcTemplate jdbcTemplate;
     User user;

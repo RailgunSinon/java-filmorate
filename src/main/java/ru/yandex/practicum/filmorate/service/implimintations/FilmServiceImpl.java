@@ -13,21 +13,19 @@ import ru.yandex.practicum.filmorate.exeptions.FilmAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exeptions.LikeNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
-import ru.yandex.practicum.filmorate.models.FilmGenre;
-import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.service.interfaces.FilmService;
-import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
 
 
 @Service
 @Slf4j
 public class FilmServiceImpl implements FilmService {
 
-    private final FilmStorage filmStorage;
+    private final Storage<Film> filmStorage;
     private int counter = 1;
 
     @Autowired
-    public FilmServiceImpl(@Qualifier("inDatabaseFilmStorageImpl") FilmStorage filmStorage) {
+    public FilmServiceImpl(@Qualifier("inDatabaseFilmStorageImpl") Storage<Film> filmStorage) {
         this.filmStorage = filmStorage;
     }
 
@@ -96,30 +94,6 @@ public class FilmServiceImpl implements FilmService {
             .sorted(Collections.reverseOrder())
             .limit(counter)
             .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<FilmGenre> getAllFilmGenres() {
-        log.debug("Запрос на получение всех жанров");
-        return filmStorage.getAllGenres();
-    }
-
-    @Override
-    public FilmGenre getFilmGenreById(int id) {
-        log.debug("Запрос на получение жанра фильма по id");
-        return filmStorage.getFilmGenreById(id);
-    }
-
-    @Override
-    public List<FilmRating> getAllFilmRatings() {
-        log.debug("Запрос на получение всех рейтингов");
-        return filmStorage.getAllFilmRatings();
-    }
-
-    @Override
-    public FilmRating getFilmRatingById(int id) {
-        log.debug("Запрос на получение возрастного рейтинга фильма по id");
-        return filmStorage.getFilmRatingById(id);
     }
 
     private void filmValidation(Film film) {

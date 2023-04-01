@@ -9,11 +9,17 @@ import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
 
+/*
+
+ */
 @Component
 @Slf4j
 public class InMemoryFilmStorageImpl implements Storage<Film> {
 
     private final HashMap<Integer, Film> films = new HashMap<>();
+
+    public InMemoryFilmStorageImpl() {
+    }
 
     @Override
     public Film addData(Film film) {
@@ -29,7 +35,7 @@ public class InMemoryFilmStorageImpl implements Storage<Film> {
 
     @Override
     public List<Film> getAllData() {
-        return new ArrayList<Film>(films.values());
+        return new ArrayList<>(films.values());
     }
 
     @Override

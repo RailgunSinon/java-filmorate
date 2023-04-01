@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
 import ru.yandex.practicum.filmorate.exeptions.FilmAlreadyExistsException;
@@ -15,8 +16,7 @@ import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.service.interfaces.FilmService;
 import ru.yandex.practicum.filmorate.storage.interfaces.Storage;
 
-//Я подумывал задачь через Primary или Qualifier конкретики, но по идее Autowired должен и сам
-//справиться при единичной импементации.
+
 @Service
 @Slf4j
 public class FilmServiceImpl implements FilmService {
@@ -25,7 +25,7 @@ public class FilmServiceImpl implements FilmService {
     private int counter = 1;
 
     @Autowired
-    public FilmServiceImpl(Storage<Film> filmStorage) {
+    public FilmServiceImpl(@Qualifier("inDatabaseFilmStorageImpl") Storage<Film> filmStorage) {
         this.filmStorage = filmStorage;
     }
 
@@ -49,7 +49,7 @@ public class FilmServiceImpl implements FilmService {
             throw new FilmNotFoundException("Фильм с таким id не найден");
         }
         filmValidation(film);
-        filmStorage.addData(film);
+        filmStorage.updateData(film);
         return filmStorage.getDataById(film.getId());
     }
 

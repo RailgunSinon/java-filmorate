@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.controllers.implimintations;
+package ru.yandex.practicum.filmorate.controllers;
 
 import java.util.List;
 import java.util.Map;
@@ -17,42 +17,41 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.controllers.interfaces.FilmController;
-import ru.yandex.practicum.filmorate.exeptions.FilmAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
+import ru.yandex.practicum.filmorate.exeptions.FilmAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exeptions.LikeNotFoundException;
+import ru.yandex.practicum.filmorate.exeptions.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.service.interfaces.FilmService;
 
+// Я так подумал - для эндпоинтов интерфейсы просто описывали "обязательные" методы, а потому не
+// сильно они нужны на самом деле. Поэтому решил их отсюда убрать. Лишний код просто напросто
 
 @RestController
 @Slf4j
-public class FilmControllerImpl implements FilmController {
+public class FilmController {
 
     private static final int TOP_FILM_COUNT = 10;
     private final FilmService filmService;
 
     @Autowired
-    public FilmControllerImpl(FilmService filmService) {
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 
-    @Override
     @PostMapping(value = "/films")
     public Film addFilm(@Valid @RequestBody Film film) {
         log.debug("Получен запрос на добавления фильма");
         return filmService.addFilm(film);
     }
 
-    @Override
     @PutMapping(value = "/films")
     public Film updateFilm(@Valid @RequestBody Film film) {
         log.debug("Получен запрос на обновление фильма");
         return filmService.updateFilm(film);
     }
 
-    @Override
     @GetMapping("/films")
     public List<Film> getAllFilms() {
         log.debug("Запрос на получение всех фильмов");
@@ -108,6 +107,14 @@ public class FilmControllerImpl implements FilmController {
     public Map<String, String> handleFilmNotFoundException(final FilmNotFoundException exception) {
         log.error("Фильм с заданным id не был обнаружен");
         return Map.of("Не удалось найти указанный фильм", exception.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleObjectNotFoundException(
+        final ObjectNotFoundException exception) {
+        log.error("Объект с заданным id не был обнаружен");
+        return Map.of("Не удалось найти указанный объект", exception.getMessage());
     }
 
     @ExceptionHandler

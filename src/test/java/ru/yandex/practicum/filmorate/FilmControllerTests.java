@@ -15,11 +15,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.controllers.implimintations.FilmControllerImpl;
-import ru.yandex.practicum.filmorate.controllers.interfaces.FilmController;
+import ru.yandex.practicum.filmorate.controllers.FilmController;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
 import ru.yandex.practicum.filmorate.exeptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.FilmGenre;
+import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.service.implimintations.FilmServiceImpl;
 import ru.yandex.practicum.filmorate.storage.implimintations.InMemoryFilmStorageImpl;
 
@@ -35,15 +36,21 @@ public class FilmControllerTests {
     public void setUp() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.usingContext().getValidator();
-        filmController = new FilmControllerImpl(new FilmServiceImpl(new InMemoryFilmStorageImpl()));
+        filmController = new FilmController(new FilmServiceImpl(new InMemoryFilmStorageImpl()));
+        ArrayList<FilmGenre> genre = new ArrayList<>();
+        genre.add(new FilmGenre(1, "Комедия"));
+        genre.add(new FilmGenre(2, "Драма"));
         film = new Film(1, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), 131,new HashSet<>());
+            LocalDate.of(2013, 6, 11), 131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
+        film.setGenres(genre);
     }
 
     @Test
     void validateIdNegativeShouldFailValidation() {
         film = new Film(-1, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), 131,new HashSet<>());
+            LocalDate.of(2013, 6, 11), 131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -53,7 +60,8 @@ public class FilmControllerTests {
     @Test
     void validateIdZeroShouldNotFailValidation() {
         film = new Film(0, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), 131,new HashSet<>());
+            LocalDate.of(2013, 6, 11), 131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -63,7 +71,8 @@ public class FilmControllerTests {
     @Test
     void validateDurationNegativeShouldFailValidation() {
         film = new Film(1, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), -131,new HashSet<>());
+            LocalDate.of(2013, 6, 11), -131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -73,7 +82,8 @@ public class FilmControllerTests {
     @Test
     void validateDurationZeroShouldFailValidation() {
         film = new Film(1, "Тихоокеанский рубеж", "О роботах",
-            LocalDate.of(2013, 6, 11), 0,new HashSet<>());
+            LocalDate.of(2013, 6, 11), 0, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -153,7 +163,8 @@ public class FilmControllerTests {
         Film gottenFilm;
         filmController.addFilm(film);
         film = new Film(1, "Тихоокеанский рубеж 2", "О роботах",
-            LocalDate.of(2013, 6, 11), 131,new HashSet<>());
+            LocalDate.of(2013, 6, 11), 131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
 
         filmController.updateFilm(film);
         gottenFilm = filmController.getAllFilms().get(0);
@@ -165,7 +176,8 @@ public class FilmControllerTests {
     void updateFilmWithBadParametersShouldThrowCustomValidationException() {
         filmController.addFilm(film);
         film = new Film(1, "Тихоокеанский рубеж 2", "О роботах",
-            LocalDate.of(1800, 6, 11), 131,new HashSet<>());
+            LocalDate.of(1800, 6, 11), 131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
 
         final CustomValidationException exception = Assertions.assertThrows(
             CustomValidationException.class, new Executable() {
@@ -182,7 +194,8 @@ public class FilmControllerTests {
     void updateFilmNotExistParametersShouldThrowFilmNotFoundException() {
         filmController.addFilm(film);
         film = new Film(5, "Тихоокеанский рубеж 2", "О роботах",
-            LocalDate.of(1900, 6, 11), 131,new HashSet<>());
+            LocalDate.of(1900, 6, 11), 131, new ArrayList<>(),
+            new FilmRating(1, "G"), new HashSet<>());
 
         final FilmNotFoundException exception = Assertions.assertThrows(
             FilmNotFoundException.class, new Executable() {

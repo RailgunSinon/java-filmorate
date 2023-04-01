@@ -15,8 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.controllers.implimintations.UserControllerImpl;
-import ru.yandex.practicum.filmorate.controllers.interfaces.UserController;
+import ru.yandex.practicum.filmorate.controllers.UserController;
 import ru.yandex.practicum.filmorate.exeptions.CustomValidationException;
 import ru.yandex.practicum.filmorate.exeptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.models.User;
@@ -36,9 +35,9 @@ public class UserControllerTests {
     public void setUp() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.usingContext().getValidator();
-        userController = new UserControllerImpl(new UserServiceImpl(new InMemoryUserStorageImpl()));
+        userController = new UserController(new UserServiceImpl(new InMemoryUserStorageImpl()));
         user = new User(1, "test@yandex.ru", "Kitty", "Elena",
-            LocalDate.of(1996, 11, 23),new HashSet<>());
+            LocalDate.of(1996, 11, 23), new HashSet<>());
     }
 
     @Test
@@ -89,7 +88,7 @@ public class UserControllerTests {
     @Test
     void validateIdNegativeShouldFailValidation() {
         user = new User(-1, "test@yandex.ru", "Kitty", "Elena",
-            LocalDate.of(1996, 11, 23),new HashSet<>());
+            LocalDate.of(1996, 11, 23), new HashSet<>());
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
 
@@ -99,7 +98,7 @@ public class UserControllerTests {
     @Test
     void validateIdZeroShouldNotFailValidation() {
         user = new User(0, "test@yandex.ru", "Kitty", "Elena",
-            LocalDate.of(1996, 11, 23),new HashSet<>());
+            LocalDate.of(1996, 11, 23), new HashSet<>());
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
 
@@ -143,7 +142,7 @@ public class UserControllerTests {
         User gottenUser;
         userController.addUser(user);
         user = new User(1, "testTwo@yandex.ru", "Kitty", "Elena",
-            LocalDate.of(1996, 11, 23),new HashSet<>());
+            LocalDate.of(1996, 11, 23), new HashSet<>());
 
         userController.updateUser(user);
         gottenUser = userController.getAllUsers().get(0);
@@ -155,7 +154,7 @@ public class UserControllerTests {
     void updateUserWithBadParametersShouldThrowCustomValidationException() {
         userController.addUser(user);
         user = new User(1, "testTwo@yandex.ru", "Hello world", "Elena",
-            LocalDate.of(1996, 11, 23),new HashSet<>());
+            LocalDate.of(1996, 11, 23), new HashSet<>());
 
         final CustomValidationException exception = Assertions.assertThrows(
             CustomValidationException.class, new Executable() {
@@ -172,7 +171,7 @@ public class UserControllerTests {
     void updateUserNotExistsShouldThrowUserNotFoundException() {
         userController.addUser(user);
         user = new User(5, "testTwo@yandex.ru", "Helloworld", "Elena",
-            LocalDate.of(1996, 11, 23),new HashSet<>());
+            LocalDate.of(1996, 11, 23), new HashSet<>());
 
         final UserNotFoundException exception = Assertions.assertThrows(
             UserNotFoundException.class, new Executable() {
